@@ -78,137 +78,155 @@ const contractSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  finalDate: {
+    type: Date,
+    default: Date.now(),
+  },
   status: {
     type: Number,
     enum: [1, 2, 3],
   },
+  dueDateGenerated: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 contractSchema.post("save", async function (doc) {
-  // Calculate the total amount to pay for
-  const amount = doc.amount + doc.amount * 0.2;
-  let numOfPayments = 1,
-    set = 0;
-  let toPay = amount;
+  if (!doc.dueDateGenerated) {
+    doc.dueDateGenerated = true;
 
-  // Calculate due dates
-  if (doc.payMethod === 1) {
-    numOfPayments = 30;
-    toPay = amount / 30;
-  } else if (doc.payMethod === 2) {
-    numOfPayments = 4;
-    toPay = amount / 4;
-  } else if (doc.payMethod === 3 || doc.payMethod === 4) {
-    numOfPayments = 2;
-    toPay = amount / 2;
-  }
+    // Calculate the total amount to pay for
+    const amount = doc.amount + doc.amount * 0.2;
+    let numOfPayments = 1,
+      set = 0;
+    let toPay = amount;
 
-  //Create the Due Dates
-  for (let i = 0; i < numOfPayments; i++) {
-    const dateLended = new Date(doc.dateLended); //Date Lended
+    // Calculate due dates
     if (doc.payMethod === 1) {
-      dateLended.setDate(dateLended.getDate() + i + 1);
+      numOfPayments = 30;
+      toPay = amount / 30;
     } else if (doc.payMethod === 2) {
-      dateLended.setDate(dateLended.getDate() + (i + 1) * 7);
-    } else if (doc.payMethod === 3) {
-      //Close to 15
-      if (GetCloseDate1(dateLended) === 15 && set === 0) {
-        dateLended.setDate(30);
-        set = 1;
-      } else if (GetCloseDate1(dateLended) === 15 && set === 1) {
-        dateLended.setMonth(dateLended.getMonth() + 1, 15);
-        //Close to 30
-      } else if (GetCloseDate1(dateLended) === 30 && set === 0) {
-        dateLended.setMonth(dateLended.getMonth() + 1, 15);
-        set = 1;
-      } else if (GetCloseDate1(dateLended) === 30 && set === 1) {
-        dateLended.setMonth(dateLended.getMonth() + 1, 30);
-        //Not close to 30
-      } else if (
-        GetCloseDate1(dateLended) === false &&
-        set === 0 &&
-        dateLended.getDate() < 30 &&
-        dateLended.getDate() > 15
-      ) {
-        dateLended.setDate(30);
-        set = 1;
-      } else if (
-        GetCloseDate1(dateLended) === false &&
-        set === 1 &&
-        dateLended.getDate() < 30 &&
-        dateLended.getDate() > 15
-      ) {
-        dateLended.setMonth(dateLended.getMonth() + 1, 15);
-        //Not close to 15
-      } else if (
-        GetCloseDate1(dateLended) === false &&
-        set === 0 &&
-        dateLended.getDate() < 15
-      ) {
-        dateLended.setDate(15);
-        set = 1;
-      } else if (
-        GetCloseDate1(dateLended) === false &&
-        set === 1 &&
-        dateLended.getDate() < 15
-      ) {
-        dateLended.setDate(30);
-      }
-    } else if (doc.payMethod === 4) {
-      if (GetCloseDate2(dateLended) === 10 && set === 0) {
-        dateLended.setDate(25);
-        set = 1;
-      } else if (GetCloseDate2(dateLended) === 10 && set === 1) {
-        dateLended.setMonth(dateLended.getMonth() + 1, 10);
-      } else if (GetCloseDate2(dateLended) === 25 && set === 0) {
-        dateLended.setMonth(dateLended.getMonth() + 1, 10);
-        set = 1;
-      } else if (GetCloseDate2(dateLended) === 25 && set === 1) {
-        dateLended.setMonth(dateLended.getMonth() + 1, 25);
-      } else if (
-        !GetCloseDate2(dateLended) &&
-        set === 0 &&
-        dateLended.getDate() < 25 &&
-        dateLended.getDate() > 10
-      ) {
-        dateLended.setDate(25);
-        set = 1;
-      } else if (
-        !GetCloseDate2(dateLended) &&
-        set === 1 &&
-        dateLended.getDate() < 25 &&
-        dateLended.getDate() > 10
-      ) {
-        dateLended.setMonth(dateLended.getMonth() + 1, 10);
-      } else if (
-        !GetCloseDate2(dateLended) &&
-        set === 0 &&
-        dateLended.getDate() < 10
-      ) {
-        dateLended.setDate(10);
-        set = 1;
-      } else if (
-        !GetCloseDate2(dateLended) &&
-        set === 1 &&
-        dateLended.getDate() < 10
-      ) {
-        dateLended.setDate(25);
-      }
-    } else if (doc.payMethod === 5) {
-      dateLended.setDate(dateLended.getDate() + 30);
+      numOfPayments = 4;
+      toPay = amount / 4;
+    } else if (doc.payMethod === 3 || doc.payMethod === 4) {
+      numOfPayments = 2;
+      toPay = amount / 2;
     }
 
-    // Create due date
-    const dueDateDocument = new DueDate({
-      username: doc.username,
-      amountToPay: toPay,
-      payMethod: doc.payMethod,
-      dueDate: dateLended,
-      status: 0,
-    });
+    //Create the Due Dates
+    for (let i = 1; i <= numOfPayments; i++) {
+      const dateLended = new Date(doc.dateLended); //Date Lended
+      if (doc.payMethod === 1) {
+        dateLended.setDate(dateLended.getDate() + i);
+      } else if (doc.payMethod === 2) {
+        dateLended.setDate(dateLended.getDate() + i * 7);
+      } else if (doc.payMethod === 3) {
+        //Close to 15
+        if (GetCloseDate1(dateLended) === 15 && set === 0) {
+          dateLended.setDate(30);
+          set = 1;
+        } else if (GetCloseDate1(dateLended) === 15 && set === 1) {
+          dateLended.setMonth(dateLended.getMonth() + 1, 15);
+          //Close to 30
+        } else if (GetCloseDate1(dateLended) === 30 && set === 0) {
+          dateLended.setMonth(dateLended.getMonth() + 1, 15);
+          set = 1;
+        } else if (GetCloseDate1(dateLended) === 30 && set === 1) {
+          dateLended.setMonth(dateLended.getMonth() + 1, 30);
+          //Not close to 30
+        } else if (
+          GetCloseDate1(dateLended) === false &&
+          set === 0 &&
+          dateLended.getDate() < 30 &&
+          dateLended.getDate() > 15
+        ) {
+          dateLended.setDate(30);
+          set = 1;
+        } else if (
+          GetCloseDate1(dateLended) === false &&
+          set === 1 &&
+          dateLended.getDate() < 30 &&
+          dateLended.getDate() > 15
+        ) {
+          dateLended.setMonth(dateLended.getMonth() + 1, 15);
+          //Not close to 15
+        } else if (
+          GetCloseDate1(dateLended) === false &&
+          set === 0 &&
+          dateLended.getDate() < 15
+        ) {
+          dateLended.setDate(15);
+          set = 1;
+        } else if (
+          GetCloseDate1(dateLended) === false &&
+          set === 1 &&
+          dateLended.getDate() < 15
+        ) {
+          dateLended.setDate(30);
+        }
+      } else if (doc.payMethod === 4) {
+        if (GetCloseDate2(dateLended) === 10 && set === 0) {
+          dateLended.setDate(25);
+          set = 1;
+        } else if (GetCloseDate2(dateLended) === 10 && set === 1) {
+          dateLended.setMonth(dateLended.getMonth() + 1, 10);
+        } else if (GetCloseDate2(dateLended) === 25 && set === 0) {
+          dateLended.setMonth(dateLended.getMonth() + 1, 10);
+          set = 1;
+        } else if (GetCloseDate2(dateLended) === 25 && set === 1) {
+          dateLended.setMonth(dateLended.getMonth() + 1, 25);
+        } else if (
+          !GetCloseDate2(dateLended) &&
+          set === 0 &&
+          dateLended.getDate() < 25 &&
+          dateLended.getDate() > 10
+        ) {
+          dateLended.setDate(25);
+          set = 1;
+        } else if (
+          !GetCloseDate2(dateLended) &&
+          set === 1 &&
+          dateLended.getDate() < 25 &&
+          dateLended.getDate() > 10
+        ) {
+          dateLended.setMonth(dateLended.getMonth() + 1, 10);
+        } else if (
+          !GetCloseDate2(dateLended) &&
+          set === 0 &&
+          dateLended.getDate() < 10
+        ) {
+          dateLended.setDate(10);
+          set = 1;
+        } else if (
+          !GetCloseDate2(dateLended) &&
+          set === 1 &&
+          dateLended.getDate() < 10
+        ) {
+          dateLended.setDate(25);
+        }
+      } else if (doc.payMethod === 5) {
+        dateLended.setDate(dateLended.getDate() + 30);
+      }
 
-    // Save the due date document
-    await dueDateDocument.save();
+      //Setting the fjnal date for completion
+      if (i === numOfPayments) {
+        doc.finalDate = dateLended;
+      }
+
+      // Create due date
+      const dueDateDocument = new DueDate({
+        username: doc.username,
+        amountToPay: toPay,
+        payMethod: doc.payMethod,
+        dueDate: dateLended,
+        status: 0,
+      });
+
+      // Save the due date document
+      await dueDateDocument.save();
+    }
+    await doc.save();
   }
 });
 
