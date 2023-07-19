@@ -46,7 +46,6 @@ router.post("/", upload.single("file"), async (req, res) => {
     const downloadURL = await getDownloadURL(snapshot.ref);
 
     return res.status(200).json({
-      Message: "File uploaded successfully.",
       DownloadURL: downloadURL,
     });
   } catch (err) {
