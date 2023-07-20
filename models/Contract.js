@@ -221,6 +221,7 @@ contractSchema.post("save", async function (doc) {
         payMethod: doc.payMethod,
         dueDate: dateLended,
         status: 0,
+        contractID: doc._id,
       });
 
       // Save the due date document

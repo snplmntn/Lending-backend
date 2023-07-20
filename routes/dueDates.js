@@ -54,6 +54,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+//Get a specific due date
 router.get("/date/:date", async (req, res) => {
   try {
     const { date } = req.params;
@@ -77,6 +78,70 @@ router.get("/date/:date", async (req, res) => {
     res.status(200).json(dueDates);
   } catch (err) {
     return res.status(500).json(err);
+  }
+});
+
+//Get ongoing due dates
+router.get("/date/ongoing/:date", async (req, res) => {
+  try {
+    const { date } = req.params;
+    const parsedDate = new Date(date);
+
+    if (isNaN(parsedDate)) {
+      throw new Error("Invalid date");
+    }
+
+    const year = parsedDate.getFullYear();
+    const month = parsedDate.getMonth();
+    const day = parsedDate.getDate();
+
+    const dueDates = await DueDate.find({
+      dueDate: {
+        $gte: new Date(year, month, day),
+      },
+    });
+
+    res.status(200).json(dueDates);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
+
+//Get past due dates
+router.get("/date/past/:date", async (req, res) => {
+  try {
+    const { date } = req.params;
+    const parsedDate = new Date(date);
+
+    if (isNaN(parsedDate)) {
+      throw new Error("Invalid date");
+    }
+
+    const year = parsedDate.getFullYear();
+    const month = parsedDate.getMonth();
+    const day = parsedDate.getDate();
+
+    const dueDates = await DueDate.find({
+      dueDate: {
+        $lt: new Date(year, month, day),
+      },
+    });
+
+    res.status(200).json(dueDates);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
+
+// Get Unpaid Due Dates
+router.get("/status/:status", async (req, res) => {
+  try {
+    const unpaidDues = await DueDate.find({
+      status: req.params.status,
+    });
+    res.status(200).json(unpaidDues);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch unpaid due dates" });
   }
 });
 

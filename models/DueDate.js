@@ -18,11 +18,15 @@ const DueDateSchema = new mongoose.Schema({
   },
   dueDate: {
     type: Date,
+    require: true,
   },
   status: {
     type: Number,
     enum: [0, 1, 2],
     default: 0,
+  },
+  contractID: {
+    type: String,
   },
 });
 

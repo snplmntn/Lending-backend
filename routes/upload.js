@@ -30,7 +30,7 @@ router.post("/", upload.single("file"), async (req, res) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const storageRef = ref(
       storage,
-      `files/${req.file.originalname + "-" + uniqueSuffix}`
+      `contracts/${req.body.name}/${req.file.originalname + "-" + uniqueSuffix}`
     );
 
     const metadata = {
