@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const path = require("path");
 const cors = require("cors");
 const cron = require("node-cron");
 const moment = require("moment-timezone");
@@ -20,13 +19,14 @@ const uploadRoute = require("./routes/upload");
 // Initialization
 const app = express();
 dotenv.config();
-
-//Port
 const port = 8080;
 
-mongoose.connect("mongodb+srv://snplmntn:23zmRbgWWd4s7ETo@cluster0.djweamd.mongodb.net/?retryWrites=true&w=majority", () => {
-  console.log("Connected to MongoDB");
-});
+mongoose.connect(
+  "mongodb+srv://snplmntn:23zmRbgWWd4s7ETo@cluster0.djweamd.mongodb.net/?retryWrites=true&w=majority",
+  () => {
+    console.log("Connected to MongoDB");
+  }
+);
 
 // Middlewares
 app.use(express.json());
@@ -41,7 +41,7 @@ app.use("/api/dueDates", dueDateRoute);
 app.use("/api/upload", uploadRoute);
 
 app.listen(port, () => {
-  console.log("Server Started" + port);
+  console.log("Server Started " + port);
 });
 
 // Run the background task at 12am in Asia/Manila time zone
