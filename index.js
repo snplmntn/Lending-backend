@@ -21,6 +21,9 @@ const uploadRoute = require("./routes/upload");
 const app = express();
 dotenv.config();
 
+//Port
+const port = 8080;
+
 mongoose.connect("mongodb+srv://snplmntn:23zmRbgWWd4s7ETo@cluster0.djweamd.mongodb.net/?retryWrites=true&w=majority", () => {
   console.log("Connected to MongoDB");
 });
@@ -37,8 +40,8 @@ app.use("/api/contract", contractRoute);
 app.use("/api/dueDates", dueDateRoute);
 app.use("/api/upload", uploadRoute);
 
-app.listen(8080, () => {
-  console.log("Server Started");
+app.listen(port, () => {
+  console.log("Server Started" + port);
 });
 
 // Run the background task at 12am in Asia/Manila time zone
