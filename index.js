@@ -30,7 +30,6 @@ app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
 app.use(cors());
-app.use("/images", express.static(path.join(__dirname, "public/contracts")));
 
 app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);

@@ -64,4 +64,16 @@ router.get("/", async (req, res) => {
   }
 });
 
+//Get ongoing due dates
+router.get("/status/:status", async (req, res) => {
+  try {
+    const contract = await Contract.find({
+      status: req.params.status,
+    });
+    res.status(200).json(contract);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch unpaid due dates" });
+  }
+});
+
 module.exports = router;

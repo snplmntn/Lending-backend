@@ -61,6 +61,10 @@ const contractSchema = new mongoose.Schema({
     type: Number,
     require: true,
   },
+  amountToPay: {
+    type: Number,
+    require: true,
+  },
   payMethod: {
     type: Number,
     enum: [1, 2, 3, 4, 5],
@@ -85,6 +89,7 @@ const contractSchema = new mongoose.Schema({
   status: {
     type: Number,
     enum: [1, 2, 3],
+    default: 1,
   },
   dueDateGenerated: {
     type: Boolean,
@@ -212,6 +217,7 @@ contractSchema.post("save", async function (doc) {
       //Setting the fjnal date for completion
       if (i === numOfPayments) {
         doc.finalDate = dateLended;
+        doc.amountToPay = amount;
       }
 
       // Create due date

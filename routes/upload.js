@@ -7,7 +7,6 @@ const {
   getDownloadURL,
   uploadBytesResumable,
 } = require("firebase/storage");
-const { config } = require("firebase/remote-config");
 
 const firebaseConfig = {
   apiKey: "AIzaSyCxHOuR3KjXMhsmz3qSj3RPsierPr66wDI",
