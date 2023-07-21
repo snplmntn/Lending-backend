@@ -21,7 +21,7 @@ const uploadRoute = require("./routes/upload");
 const app = express();
 dotenv.config();
 
-mongoose.connect(process.env.MONGO_URL, () => {
+mongoose.connect("mongodb+srv://snplmntn:23zmRbgWWd4s7ETo@cluster0.djweamd.mongodb.net/?retryWrites=true&w=majority", () => {
   console.log("Connected to MongoDB");
 });
 
