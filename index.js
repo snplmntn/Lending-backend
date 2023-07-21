@@ -21,24 +21,25 @@ const app = express();
 dotenv.config();
 const port = 8080;
 
-mongoose.connect(
-  "mongodb+srv://snplmntn:23zmRbgWWd4s7ETo@cluster0.djweamd.mongodb.net/?retryWrites=true&w=majority",
-  () => {
-    console.log("Connected to MongoDB");
-  }
-);
-
 // Middlewares
 app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+  })
+);
 
 app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/contract", contractRoute);
 app.use("/api/dueDates", dueDateRoute);
 app.use("/api/upload", uploadRoute);
+
+mongoose.connect(process.env.MONGO_URI, () => {
+  console.log("Connected to MongoDB");
+});
 
 app.listen(port, () => {
   console.log("Server Started " + port);
