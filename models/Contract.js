@@ -48,35 +48,38 @@ function GetCloseDate2(date) {
 const contractSchema = new mongoose.Schema({
   username: {
     type: String,
-    require: true,
+    required: true,
     min: 3,
     max: 20,
   },
   lendingType: {
     type: Number,
     enum: [1, 2],
-    require: true,
+    required: true,
   },
   amount: {
     type: Number,
-    require: true,
+    required: true,
   },
   amountToPay: {
     type: Number,
-    require: true,
+  },
+  totalPaid: {
+    type: Number,
+    default: 0,
   },
   payMethod: {
     type: Number,
     enum: [1, 2, 3, 4, 5],
-    require: true,
+    required: true,
   },
   letter: {
     type: String,
-    require: true,
+    required: true,
   },
   proof: {
     type: String,
-    require: true,
+    required: true,
   },
   dateLended: {
     type: Date,

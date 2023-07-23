@@ -1,4 +1,5 @@
 const DueDate = require("../models/DueDate");
+const Contract = require("../models/Contract");
 const router = require("express").Router();
 
 //Add a new Due Date
@@ -82,7 +83,7 @@ router.get("/date/:date", async (req, res) => {
 });
 
 //Get ongoing due dates
-router.get("/date/ongoing/:date", async (req, res) => {
+router.get("/ongoing/:date", async (req, res) => {
   try {
     const { date } = req.params;
     const parsedDate = new Date(date);
@@ -108,7 +109,7 @@ router.get("/date/ongoing/:date", async (req, res) => {
 });
 
 //Get past due dates
-router.get("/date/past/:date", async (req, res) => {
+router.get("/past/:date", async (req, res) => {
   try {
     const { date } = req.params;
     const parsedDate = new Date(date);
