@@ -28,9 +28,6 @@ const DueDateSchema = new mongoose.Schema({
   contractID: {
     type: String,
   },
-  changedToPaidBy: {
-    type: String,
-  },
 });
 
 module.exports = mongoose.model("DueDate", DueDateSchema);

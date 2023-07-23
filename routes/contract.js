@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
 
 // Update Contract
 router.put("/:id", async (req, res) => {
-  if (true) {
+  if (req.user.isAdmin) {
     try {
       const contract = await Contract.findByIdAndUpdate(req.params.id, {
         $set: req.body,

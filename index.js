@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cors = require("cors");
+const cron = require("node-cron");
 const moment = require("moment-timezone");
 const DueDate = require("./models/DueDate");
 
@@ -24,7 +25,11 @@ const port = 8080;
 app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+  })
+);
 
 app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);
@@ -36,10 +41,13 @@ mongoose.connect(process.env.MONGO_URI, () => {
   console.log("Connected to MongoDB");
 });
 
-// ...
+app.listen(port, () => {
+  console.log("Server Started " + port);
+});
 
-// Function to update due date statuses
-const updateDueDateStatuses = async () => {
+// Run the background task at 12am in Asia/Manila time zone
+cron.schedule("0 */12 * * *", async () => {
+  const now = moment().tz("Asia/Manila");
   try {
     const currentDate = new Date();
     const overdueDueDates = await DueDate.find({
@@ -56,12 +64,4 @@ const updateDueDateStatuses = async () => {
   } catch (err) {
     console.error("An error occurred while updating the status:", err);
   }
-};
-
-// Start the server and update due date statuses
-app.listen(port, async () => {
-  console.log("Server Started " + port);
-
-  // Update due date statuses when the server starts
-  await updateDueDateStatuses();
 });
