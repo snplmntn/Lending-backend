@@ -63,20 +63,23 @@ const contractSchema = new mongoose.Schema({
   },
   amountToPay: {
     type: Number,
-    require: true,
+  },
+  totalPaid: {
+    type: Number,
+    default: 0,
   },
   payMethod: {
     type: Number,
     enum: [1, 2, 3, 4, 5],
-    require: true,
+    required: true,
   },
   letter: {
     type: String,
-    require: true,
+    required: true,
   },
   proof: {
     type: String,
-    require: true,
+    required: true,
   },
   dateLended: {
     type: Date,

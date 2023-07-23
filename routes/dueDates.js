@@ -1,4 +1,5 @@
 const DueDate = require("../models/DueDate");
+const Contract = require("../models/Contract");
 const router = require("express").Router();
 
 //Add a new Due Date
