@@ -5,7 +5,6 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cors = require("cors");
-const moment = require("moment-timezone");
 const DueDate = require("./models/DueDate");
 
 // Routes
