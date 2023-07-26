@@ -63,7 +63,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-//Get ongoing due dates
+//Get contracts
 router.get("/status/:status", async (req, res) => {
   try {
     const contract = await Contract.find({
