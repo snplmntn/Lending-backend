@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cors = require("cors");
 const DueDate = require("./models/DueDate");
+const Contract = require("./models/Contract");
 
 // Routes
 const userRoute = require("./routes/users");
@@ -39,8 +40,8 @@ mongoose.connect(process.env.MONGO_URI, () => {
 
 // Function to update due date statuses
 const updateDueDateStatuses = async () => {
+  const currentDate = new Date();
   try {
-    const currentDate = new Date();
     const overdueDueDates = await DueDate.find({
       dueDate: { $lt: currentDate },
       status: { $ne: 2, $ne: 1 },
@@ -51,7 +52,23 @@ const updateDueDateStatuses = async () => {
       await dueDate.save();
     }
 
-    console.log("Status updated successfully.");
+    console.log("Due Dates Status Updated Successfully.");
+  } catch (err) {
+    console.error("An error occurred while updating the status:", err);
+  }
+
+  try {
+    const overdueContracts = await Contract.find({
+      finalDate: { $lt: currentDate },
+      status: { $ne: 2, $ne: 1 },
+    });
+
+    for (const finalDate of overdueContracts) {
+      finalDate.status = 2;
+      await finalDate.save();
+    }
+
+    console.log("Contracts Status Updated Successfully.");
   } catch (err) {
     console.error("An error occurred while updating the status:", err);
   }

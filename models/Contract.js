@@ -87,12 +87,11 @@ const contractSchema = new mongoose.Schema({
   },
   finalDate: {
     type: Date,
-    default: Date.now(),
   },
   status: {
     type: Number,
-    enum: [1, 2, 3],
-    default: 1,
+    enum: [0, 1, 2],
+    default: 0,
   },
   dueDateGenerated: {
     type: Boolean,

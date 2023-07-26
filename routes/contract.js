@@ -1,5 +1,4 @@
 const Contract = require("../models/Contract");
-const DueDate = require("../models/DueDate");
 const router = require("express").Router();
 
 //Add a new Contract
@@ -7,9 +6,7 @@ router.post("/", async (req, res) => {
   const newContract = new Contract(req.body);
   try {
     const savedContract = await newContract.save();
-    console.log("Saved contract");
     res.status(200).json(savedContract);
-    console.log("passed the contract");
   } catch (err) {
     res.status(500).json(err);
   }
